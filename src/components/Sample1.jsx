@@ -114,7 +114,7 @@ function Sample1() {
       label: "ball", // ラベル。スイッチとの識別に必要
       density: 10, // 密度
       render: {
-        fillStyle: "yellow" // 塗りつぶす色
+        fillStyle: "cyan" // 塗りつぶす色
       }
     }
     // 初期化時に用意したボールのコンポジットに登録し、ボールを生成

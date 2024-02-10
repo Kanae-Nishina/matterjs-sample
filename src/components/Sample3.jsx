@@ -1,69 +1,133 @@
-import { useEffect, useState } from "react";
-import Matter, { Body, Constraint, Events } from "matter-js";
+import { useEffect, useRef, useState } from "react";
+import MatterEngine from "../lib/MatterEngine";
+import { Circle, createObjects, createObject, Rectangle } from "../lib/Bodies";
+import CollisionEvents from "../lib/CollisionEvents";
+import { useNavigate } from "react-router-dom";
+import { Body, Events } from "matter-js";
 
 function Sample3() {
-  const { Engine, Render, Bodies, Runner, Composite } = Matter;
-  const [ballComposite, setBallComposite] = useState(null);
+  const matterRef = useRef(null);
+  const spawnBallRef = useRef(null);
+  const switchObjRef = useRef(null);
+  const stageDataRef = useRef(null);
+  const [gameClear, setGameClear] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigator = useNavigate();
 
   useEffect(() => {
-    const engine = Engine.create();
-    const render = Render.create({
-      element: document.body.querySelector(".Sample3"),
-      engine: engine,
-      options: {
-        width: 800,
-        height: 600,
-        wireframes: false,
-      },
-    });
-    Render.run(render);
+    setLoading(true);
+    const getStageData = async () => {
+      // TODO : ここで何かしらの方法でステージ名前を取得する
+      const query = "Sample3";
+      const url = `${process.env.REACT_APP_SERVER_URL}?stage=${query}`;
+      await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          stageDataRef.current = data;
+          matterInitialize();
 
-    // 回転オブジェクト
-    const floor = Bodies.rectangle(500, 200, 300, 30, {
-      angle: 0,
-    });
-    // 回転軸
-    const pivot = Bodies.circle(500, 200, 5, { isStatic: true });
-    // 回転制約
-    const constraint = Constraint.create({
-      bodyA: floor, // 回転させたいオブジェクト
-      pointA: { x: 0, y: 0 }, // 回転させたいオブジェクトの中心
-      bodyB: pivot, // 回転軸
-      pointB: { x: 0, y: 0 }, // 回転軸の中心
-    });
+          /* 回転オブジェクトの生成
+            TODO : ギミック要素は何を作るか決まってから用意したいのでクラス化していません
+          */
+          const rotateObj = new Rectangle(matterRef.current.getMatter(), 500, 200, "default", 300, 30);
+          const pivot = new Circle(matterRef.current.getMatter(), 500, 200, "default", 5, { isStatic: true });
+          const constraint = matterRef.current.getMatter().Constraint.create({
+            bodyA: rotateObj.getObject(),
+            pointA: { x: 0, y: 0 },
+            bodyB: pivot.getObject(),
+            pointB: { x: 0, y: 0 },
+          });
 
-    // 地面
-    const ground = Bodies.rectangle(400, 585, 800, 30, { isStatic: true });
+          matterRef.current.registerObject([rotateObj, constraint]);
 
-    // 生成するボール
-    const ballComposite = Composite.create();
-    setBallComposite(ballComposite);
+          // TODO : 更新前処理の登録
+          // 更新周りのイベントクラスをつくる
+          Events.on(matterRef.current.getEngine(), "beforeUpdate", function (event) {
+            Body.setAngularVelocity(rotateObj.getObject(), 0.05);
+          });
 
-    // オブジェクト登録
-    Composite.add(engine.world, [constraint, floor, ground, ballComposite]);
-
-    // 更新前処理をイベントに追加
-    Events.on(engine, "beforeUpdate", function (event) {
-      Body.setAngularVelocity(floor, 0.05);
-    });
-
-    // オブジェクト用レンダリング作成
-    Runner.run(Runner.create(), engine);
+          // スポーンボールの生成
+          const ball = new Circle(matterRef.current.getMatter(), 0, 0, "default", 20, {}, true);
+          spawnBallRef.current = ball;
+          //matterRef.current.registerObject([ball, constraint, pivot, rotateObj]);
+          matterRef.current.registerObject(ball);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    };
+    getStageData();
   }, []);
 
-  // クリックでボタン生成
-  const handleClick = (e) => {
+  useEffect(() => {
+    if (gameClear) {
+      const timeoutId = setTimeout(() => {
+        alert("ゲームクリア");
+        clearTimeout(timeoutId);
+      }, 1000);
+    }
+  }, [gameClear]);
+
+  const matterInitialize = () => {
+    matterRef.current = new MatterEngine();
+    matterRef.current.setup(".Game");
+    matterRef.current.run();
+
+    const colEvents = new CollisionEvents(matterRef.current.getEngine());
+    colEvents.pushSwitch(handleSwitch);
+
+    const switchButton = createObject(matterRef.current.getMatter(), stageDataRef.current.Switch, "Switch");
+    switchObjRef.current = switchButton;
+    const stageObject = createObjects(matterRef.current.getMatter(), stageDataRef.current.Stage);
+
+    matterRef.current.registerObject([switchButton, ...stageObject]);
+  }
+
+  const handleSwitch = () => {
+    const intervalId = setInterval(() => {
+      const results = switchObjRef.current.setPositionAnimate(400, 580);
+      setGameClear(results);
+      if (results) {
+        clearInterval(intervalId);
+      }
+    }, 1000 / 30);
+  };
+
+  const handleSpawnBall = (e) => {
     const rect = e.target.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const radius = 30;
-    const ball = Bodies.circle(x, y, radius, { density: 10 });
-    Composite.add(ballComposite, ball);
+    const radius = 25;
+    const option = {
+      label: "ball",
+      density: 10,
+      render: {
+        fillStyle: "cyan"
+      }
+    }
+    spawnBallRef.current.objectSpawn(x, y, radius, option);
+  };
+
+  const handleReset = () => {
+    // TODO : ページリロードをしているので工夫が必要
+    navigator(0);
   };
 
   return (
-    <div className="Sample3" onClick={handleClick}>
-      <p>クリックでボールが出現します。</p>
+    <div>
+      {loading ? <div>loading...</div> :
+        <>
+          <h2>{stageDataRef.current && stageDataRef.current.name}</h2>
+          <p>クリックでボール生成できます。生成されたボールでスイッチを押すと、アニメーションのあとアラートが表示されます。</p>
+          <button onClick={() => handleReset()}>リセット</button>
+        </>}
+      <div className="Game" onClick={(e) => handleSpawnBall(e)}></div>
     </div>
   );
 }

@@ -1,0 +1,36 @@
+{
+  "name": "Sample3",
+  "version": "1.0.0",
+  "description": "自動回転サンプル",
+  "Stage": [
+    {
+      "bodiesType": "Rectangle",
+      "x": 400,
+      "y": 585,
+      "width": 800,
+      "height": 30,
+      "option": {
+        "isStatic": true,
+        "sollisionFilter": {
+          "group": -1
+        },
+        "label": "stage"
+      }
+    }
+  ],
+  "Switch": {
+    "bodiesType": "Rectangle",
+    "x": 400,
+    "y": 550,
+    "width": 100,
+    "height": 50,
+    "option": {
+      "isStatic": true,
+      "sollisionFilter": {
+        "group": -1
+      },
+      "label": "switch"
+    }
+  },
+  "UserPlacement": []
+}

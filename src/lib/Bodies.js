@@ -123,7 +123,7 @@ class Bodies {
    * @param {object} option オプション
    * @description オプションに色設定を追加して返却
    */
-  getOption(option) {
+  getOptionAddColor(option) {
     let optionAddColor;
     if (option) {
       optionAddColor = { ...option, render: this.getColorSetting(option) };
@@ -159,7 +159,7 @@ class Rectangle extends Bodies {
   ) {
     super(matter, x, y, type);
     if (!isSpawn) {
-      this.object = this.bodies.rectangle(x, y, width, height, this.getOption(option, type));
+      this.object = this.bodies.rectangle(x, y, width, height, this.getOptionAddColor(option, type));
       this.composite.add(this.compositeCreate, this.object);
     } else {
       this.object = null;
@@ -201,7 +201,7 @@ class Circle extends Bodies {
   ) {
     super(matter, x, y, type);
     if (!isSpawn) {
-      this.object = this.bodies.circle(x, y, radius, this.getOption(option));
+      this.object = this.bodies.circle(x, y, radius, this.getOptionAddColor(option));
       this.composite.add(this.compositeCreate, this.object);
     } else {
       this.object = null;
@@ -241,7 +241,7 @@ class Triangle extends Bodies {
   ) {
     super(matter, x, y, type);
     if (!isSpawn) {
-      this.object = this.bodies.polygon(x, y, 3, height, this.getOption(option, type));
+      this.object = this.bodies.polygon(x, y, 3, height, this.getOptionAddColor(option, type));
       this.composite.add(this.compositeCreate, this.object);
     } else {
       this.object = null;
@@ -269,7 +269,7 @@ class Polygon extends Bodies {
   ) {
     super(matter, x, y, type);
     if (!isSpawn) {
-      this.object = this.bodies.polygon(x, y, sides, radius, this.getOption(option, type));
+      this.object = this.bodies.polygon(x, y, sides, radius, this.getOptionAddColor(option, type));
       this.composite.add(this.compositeCreate, this.object);
     } else {
       this.object = null;

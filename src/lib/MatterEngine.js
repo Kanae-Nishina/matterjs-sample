@@ -51,11 +51,15 @@ class MatterEngine {
       object.forEach((item) => {
         if (typeof item.getObject === 'function') {
           this.composite.add(this.engine.world, item.getObject());
+        } else {
+          this.composite.add(this.engine.world, item);
         }
       });
     } else {
       if (typeof object.getObject === 'function') {
         this.composite.add(this.engine.world, object.getObject());
+      } else {
+        this.composite.add(this.engine.world, object);
       }
     }
 
@@ -72,6 +76,10 @@ class MatterEngine {
 
   getRender() {
     return this.render;
+  }
+
+  getComposite() {
+    return this.composite;
   }
 }
 
