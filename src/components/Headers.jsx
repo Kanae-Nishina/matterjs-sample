@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { RoutePath } from "../common/Route";
+import { RoutePath } from "../common/RoutePath";
 
 const Headers = () => {
   return (

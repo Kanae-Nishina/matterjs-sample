@@ -1,18 +1,16 @@
-import Matter from "matter-js";
+import { Composite, Engine, Render, Runner } from "matter-js";
+import { Component } from "react";
 
 class MatterEngine {
+  /**
+   * TODO : 画面幅をここで設定するとほかで使いづらいのでどうにかしたい
+   */
   DisplayWidth = 800;
   DisplayHeight = 600;
-  matter = null;
   engine = null;
-  runner = null;
-  composite = null;
   render = null;
   constructor() {
-    this.matter = Matter;
-    this.engine = this.matter.Engine.create();
-    this.runner = this.matter.Runner;
-    this.composite = this.matter.Composite;
+    this.engine = Engine.create();
   }
 
   /**
@@ -21,7 +19,7 @@ class MatterEngine {
    * @description 表示する要素のクラス名を指定して、表示設定を行う
    */
   setup(elementName) {
-    this.render = this.matter.Render.create({
+    this.render = Render.create({
       element: document.body.querySelector(elementName),
       engine: this.engine,
       options: {
@@ -30,7 +28,7 @@ class MatterEngine {
         wireframes: false,
       },
     });
-    this.matter.Render.run(this.render);
+    Render.run(this.render);
   }
 
   /**
@@ -38,7 +36,7 @@ class MatterEngine {
    * @description 登録したオブジェクトの実行
    */
   run() {
-    this.runner.run(this.runner.create(), this.engine);
+    Runner.run(Runner.create(), this.engine);
   }
 
   /**
@@ -50,26 +48,22 @@ class MatterEngine {
     if (Array.isArray(object)) {
       object.forEach((item) => {
         if (typeof item.getObject === 'function') {
-          this.composite.add(this.engine.world, item.getObject());
-        } else {
-          this.composite.add(this.engine.world, item);
+          Composite.add(this.engine.world, item.getObject());
+          return
         }
+        Composite.add(this.engine.world, item);
       });
-    } else {
-      if (typeof object.getObject === 'function') {
-        this.composite.add(this.engine.world, object.getObject());
-      } else {
-        this.composite.add(this.engine.world, object);
-      }
+      return;
     }
 
+    if (typeof object.getObject === 'function') {
+      Composite.add(this.engine.world, object.getObject());
+      return;
+    }
+    Composite.add(this.engine.world, object);
   }
 
   /* ゲッター */
-  getMatter() {
-    return this.matter;
-  }
-
   getEngine() {
     return this.engine;
   }
@@ -78,8 +72,8 @@ class MatterEngine {
     return this.render;
   }
 
-  getComposite() {
-    return this.composite;
+  setRendereMouse(mouse) {
+    this.render.mouse = mouse;
   }
 }
 

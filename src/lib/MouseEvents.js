@@ -1,23 +1,22 @@
-import { Body, Events, Mouse, MouseConstraint } from "matter-js";
+import { Engine, Events, Mouse, MouseConstraint, Render } from "matter-js";
 
 class MouseEvents {
-  mouse = null;
-  render = null;
   mouseConstraint = null;
-  stiffness = 0.2;
+  clickEvents = [];
+  dragEvents = [];
+  clickUpEvents = [];
+  mouse = null;
 
   /**
    * @method コンストラクタ
-   * @param {object} canvas Render.canvas
-   * @param {object} engine Matter.Engine
    * @description 初期化
    */
-  constructor(canvas, engine) {
-    this.mouse = Mouse.create(canvas);
+  constructor(render, engine) {
+    this.mouse = Mouse.create(render.canvas);
     this.mouseConstraint = MouseConstraint.create(engine, {
       mouse: this.mouse,
       constraint: {
-        stiffness: this.stiffness,
+        stiffness: 0.2,
         render: {
           visible: false,
         },
@@ -25,126 +24,89 @@ class MouseEvents {
     });
   }
 
+  getMouse() {
+    return this.mouse;
+  }
+
+  getMouseConstraint() {
+    return this.mouseConstraint;
+  }
+
   /**
-   * @method クリックしたオブジェクト取得
+   * @method クリックイベント登録
+   * @param {function} events 登録したいイベントコールバック
+   * @description クリックイベントを登録する。配列も可能。引数はイベント
    */
-  getClickObject() {
+  registerClickEvent(callback) {
+    if (Array.isArray(callback)) {
+      this.clickEvents.push(...callback);
+      return;
+    }
+    this.clickEvents.push(callback);
+  }
+
+  /**
+   * @method クリックイベント実行
+   * @description クリックイベントを実行する
+   */
+  onClickEvents() {
     Events.on(this.mouseConstraint, "mousedown", (e) => {
-      return e.source.body;
+      this.clickEvents.forEach((event) => {
+        event(e);
+      });
     });
   }
 
-  /**
-   * @method クリックアップしたオブジェクト取得
-   */
-  getClickUpObject() {
-    Events.on(this.mouseConstraint, "mouseup", (e) => {
-      return e.source.body;
-    });
+  offClickEvents() {
+    Events.off(this.mouseConstraint, "mousedown");
   }
 
   /**
-   * @method ドラッグ中のオブジェクト取得
+   * @method ドラッグイベント登録
+   * @param {function} callback 登録したいイベントコールバック
    */
-  getDragObject() {
+  registerDragEvent(callback) {
+    if (Array.isArray(callback)) {
+      this.dragEvents.push(...callback);
+      return;
+    }
+    this.dragEvents.push(callback);
+  }
+
+  /**
+   * @method ドラッグイベント実行
+   * @description ドラッグイベントを実行する
+   */
+  onDragEvents() {
     Events.on(this.mouseConstraint, "mousemove", (e) => {
-      return e.source.body;
+      this.dragEvents.forEach((event) => {
+        event(e);
+      });
     });
   }
 
-  /**
-   * @method ドラッグ終了したオブジェクト取得
-   */
-  getEndDragObject() {
-    Events.on(this.mouseConstraint, "enddrag", (e) => {
-      return e.body;
-    });
+  offDragEvents() {
+    Events.off(this.mouseConstraint, "mousemove");
   }
 
-  /**
-   * @method クリックした座標取得
-   */
-  getClickPosition() {
-    Events.on(this.mouseConstraint, "mousedown", (e) => {
-      return e.mouse.position;
-    });
+  registerClickUpEvent(callback) {
+    if (Array.isArray(callback)) {
+      this.clickUpEvents.push(...callback);
+      return;
+    }
+    this.clickUpEvents.push(callback);
   }
 
-  /**
-   * @method ドラッグ中の座標取得
-   */
-  getDragPosition() {
-    Events.on(this.mouseConstraint, "mousemove", (e) => {
-      return e.mouse.position;
-    });
-  }
-
-  /**
-   * @method ドラッグ終了した座標取得
-   */
-  getDtagEndPosition() {
-    Events.on(this.mouseConstraint, "enddrag", (e) => {
-      return e.mouse.position;
-    });
-  }
-
-  /**
-   * @method クリックアップした座標取得
-   */
-  getClickUpPosition() {
+  onClickUpEvents() {
     Events.on(this.mouseConstraint, "mouseup", (e) => {
-      return e.mouse.position;
+      this.clickUpEvents.forEach((event) => {
+        event(e);
+      });
     });
   }
 
-  /**
-   * @method 選択オブジェクトセットアップ
-   * @param {object} selectObjRef 選択したオブジェクトを格納するRef
-   */
-  setupSelectObject(selectObjRef) {
-    this.selectObject(selectObjRef);
-    this.dragObject(selectObjRef);
-    //this.endDragObject(selectObjRef);
-  }
-
-  /**
-   * @method オブジェクト選択
-   * @param {object} selectObjRef 選択したオブジェクトを格納するRef
-   */
-  selectObject(selectObjRef) {
-    Events.on(this.mouseConstraint, "mousedown", (event) => {
-      if (this.isUserObject(event.source.body)) {
-        selectObjRef.current = event.source.body;
-      } else {
-        selectObjRef.current = null;
-      }
-    });
-  }
-
-  /**
-   * @method オブジェクトドラッグ
-   * @param {object} selectObjRef 選択したオブジェクトを格納するRef
-   */
-  dragObject(selectObjRef) {
-    Events.on(this.mouseConstraint, "mousemove", (event) => {
-      if (this.isUserObject(event.source.body)) {
-        Body.setPosition(selectObjRef.current, this.mouse.position);
-      }
-    });
-  }
-
-  /**
-   * @method オブジェクトドラッグ終了
-   */
-  endDragObject(selectObjRef) {
-    Events.on(this.mouseConstraint, "enddrag", (event) => {
-      // TODO : 今のところ処理がないので何かあれば追加
-    });
-  }
-
-
-  isUserObject(body) {
-    return body && body.label === "user";
+  offClickUpEvents() {
+    Events.off(this.mouseConstraint, "mouseup");
   }
 }
 

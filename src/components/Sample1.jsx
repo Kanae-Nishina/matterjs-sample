@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import MatterEngine from "../lib/MatterEngine";
-import { Circle, createObjects, createObject } from "../lib/Bodies";
 import CollisionEvents from "../lib/CollisionEvents";
 import { useNavigate } from "react-router-dom";
+import { Circle } from "../lib/objects/Circle";
+import { createObject, createObjects } from "../lib/objects/CreataObjects";
 
 function Sample1() {
   // useStateは非同期で値を返すため、useRefを使って参照を保持する
@@ -40,7 +41,7 @@ function Sample1() {
            NOTE : コンポジット（Composite）はデザインパターンの１つでもある。
                   matter.jsのCompositeもそれを採用していると思われる。
           */
-          const ball = new Circle(matterRef.current.getMatter(), 0, 0, "default", 20, {}, true);
+          const ball = new Circle(0, 0, "default", 20, {}, true);
           spawnBallRef.current = ball;
           matterRef.current.registerObject(ball);
           setLoading(false);
@@ -69,7 +70,6 @@ function Sample1() {
     // セットアップ
     matterRef.current = new MatterEngine();
     matterRef.current.setup(".Game");
-    matterRef.current.run();
 
     // イベント設定
     const colEvents = new CollisionEvents(matterRef.current.getEngine());
@@ -77,13 +77,14 @@ function Sample1() {
 
     // オブジェクト登録
     // スイッチオブジェクトの取得
-    const switchButton = createObject(matterRef.current.getMatter(), stageDataRef.current.Switch, "Switch");
+    const switchButton = createObject(stageDataRef.current.Switch, "Switch");
     switchObjRef.current = switchButton;
     // ステージオブジェクトの取得
-    const stageObject = createObjects(matterRef.current.getMatter(), stageDataRef.current.Stage);
+    const stageObject = createObjects(stageDataRef.current.Stage);
 
     // matter.jsに登録
     matterRef.current.registerObject([switchButton, ...stageObject]);
+    matterRef.current.run();
   }
 
   // スイッチ押下時のイベント

@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import MatterEngine from "../lib/MatterEngine";
-import { createObjects, createObject } from "../lib/Bodies";
 import CollisionEvents from "../lib/CollisionEvents";
 import { useNavigate } from "react-router-dom";
 import MouseEvents from "../lib/MouseEvents";
 import { Body } from "matter-js";
+import { createObject, createObjects } from "../lib/objects/CreataObjects";
 
 function Sample2() {
   const matterRef = useRef(null);
@@ -17,6 +17,7 @@ function Sample2() {
   const [gameClear, setGameClear] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigator = useNavigate();
+  const clickDiffPosition = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     setLoading(true);
@@ -65,21 +66,55 @@ function Sample2() {
 
     // オブジェクト登録
     // スイッチ
-    const switchButton = createObject(matterRef.current.getMatter(), stageDataRef.current.Switch, "Switch");
+    const switchButton = createObject(stageDataRef.current.Switch, "Switch");
     switchObjRef.current = switchButton;
     // ステージオブジェクト
-    const stageObject = createObjects(matterRef.current.getMatter(), stageDataRef.current.Stage);
+    const stageObject = createObjects(stageDataRef.current.Stage);
     // ユーザーが移動できるオブジェクト
-    const userObject = createObjects(matterRef.current.getMatter(), stageDataRef.current.UserPlacement, "User");
+    const userObject = createObjects(stageDataRef.current.UserPlacement, "User");
     placementDataRef.current = userObject;
     // matter.jsにオブジェクト登録
     matterRef.current.registerObject([switchButton, ...stageObject, ...userObject]);
 
     // マウスイベント作成
-    /// NOTE : クリック・ドラッグは実装済み。クリックアップはあるけど使い道が思い浮かばなかったので未実装
-    const mouseEvent = new MouseEvents(matterRef.current.getRender().canvas, matterRef.current.getEngine());
-    mouseEvent.setupSelectObject(selectObjRef);
+    const mouseEvent = new MouseEvents(matterRef.current.getRender(), matterRef.current.getEngine());
+    matterRef.current.setRendereMouse(mouseEvent.getMouse());
+    matterRef.current.registerObject(mouseEvent.getMouseConstraint());
+    // クリックイベント
+    mouseEvent.registerClickEvent(clickEvent);
+    mouseEvent.onClickEvents();
+
+    // ドラッグイベント
+    mouseEvent.registerDragEvent(dragEvent);
+    mouseEvent.onDragEvents();
   }
+
+  // ユーザーが移動できる静止オブジェクトのクリックイベント
+  const clickEvent = (e) => {
+    // クリックされたオブジェクトを取得
+    const object = e.source.body;
+    if (!object || !object.label.match(/user(.*)/g)) {
+      selectObjRef.current = null;
+      return;
+    }
+    // 選択されているオブジェクトがクリックされたオブジェクトと違うなら選択を解除して新しく選択
+    selectObjRef.current = object;
+    const diff_x = e.mouse.position.x - selectObjRef.current.position.x;
+    const diff_y = e.mouse.position.y - selectObjRef.current.position.y;
+    clickDiffPosition.current = { x: diff_x, y: diff_y };
+  };
+
+  const dragEvent = (e) => {
+    const object = e.source.body;
+    if (!object || object.label !== "userStatic") return;
+    // ドラッグ中のオブジェクトがあるならドラッグ
+    if (selectObjRef.current && selectObjRef.current === object) {
+      const mouse = e.source.mouse;
+      const x = mouse.position.x - clickDiffPosition.current.x;
+      const y = mouse.position.y - clickDiffPosition.current.y;
+      Body.setPosition(selectObjRef.current, { x: x, y: y });
+    }
+  };
 
   // スイッチ押下時のイベント
   const handleSwitch = () => {
@@ -102,7 +137,7 @@ function Sample2() {
   // 使う機会が多いようであれば、Mouse.jsに移動でも良いかも
   const handleWheel = (e) => {
     // 選択中のオブジェクトがあるなら選択オブジェクトを回転
-    if (selectObjRef.current) {
+    if (selectObjRef.current && selectObjRef.current.label === "userStatic") {
       const delta = e.deltaY; // マウスホイールの回転量
       const angle = delta * 0.001; // 回転量が 100 or -100だったので調整する
       Body.rotate(selectObjRef.current, angle);
@@ -117,6 +152,7 @@ function Sample2() {
           <p>青色・緑色のオブジェクトは移動できます</p>
           <button onClick={() => handleReset()}>リセット</button>
         </>}
+      {/* matter.jsにホイールイベントありそう */}
       <div className="Game" onWheel={(e) => handleWheel(e)}></div>
     </div>
   );

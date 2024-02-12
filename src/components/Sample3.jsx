@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import MatterEngine from "../lib/MatterEngine";
-import { Circle, createObjects, createObject, Rectangle } from "../lib/Bodies";
 import CollisionEvents from "../lib/CollisionEvents";
 import { useNavigate } from "react-router-dom";
-import { Body, Events } from "matter-js";
+import { Body, Constraint, Events } from "matter-js";
+import { Rectangle } from "../lib/objects/Rectangle";
+import { Circle } from "../lib/objects/Circle";
+import { createObject, createObjects } from "../lib/objects/CreataObjects";
 
 function Sample3() {
   const matterRef = useRef(null);
@@ -34,9 +36,9 @@ function Sample3() {
           /* 回転オブジェクトの生成
             TODO : ギミック要素は何を作るか決まってから用意したいのでクラス化していません
           */
-          const rotateObj = new Rectangle(matterRef.current.getMatter(), 500, 200, "default", 300, 30);
-          const pivot = new Circle(matterRef.current.getMatter(), 500, 200, "default", 5, { isStatic: true });
-          const constraint = matterRef.current.getMatter().Constraint.create({
+          const rotateObj = new Rectangle(500, 200, "default", 300, 30);
+          const pivot = new Circle(500, 200, "default", 5, { isStatic: true });
+          const constraint = Constraint.create({
             bodyA: rotateObj.getObject(),
             pointA: { x: 0, y: 0 },
             bodyB: pivot.getObject(),
@@ -52,9 +54,8 @@ function Sample3() {
           });
 
           // スポーンボールの生成
-          const ball = new Circle(matterRef.current.getMatter(), 0, 0, "default", 20, {}, true);
+          const ball = new Circle(0, 0, "default", 20, {}, true);
           spawnBallRef.current = ball;
-          //matterRef.current.registerObject([ball, constraint, pivot, rotateObj]);
           matterRef.current.registerObject(ball);
           setLoading(false);
         })
@@ -77,16 +78,16 @@ function Sample3() {
   const matterInitialize = () => {
     matterRef.current = new MatterEngine();
     matterRef.current.setup(".Game");
-    matterRef.current.run();
 
     const colEvents = new CollisionEvents(matterRef.current.getEngine());
     colEvents.pushSwitch(handleSwitch);
 
-    const switchButton = createObject(matterRef.current.getMatter(), stageDataRef.current.Switch, "Switch");
+    const switchButton = createObject(stageDataRef.current.Switch, "Switch");
     switchObjRef.current = switchButton;
-    const stageObject = createObjects(matterRef.current.getMatter(), stageDataRef.current.Stage);
+    const stageObject = createObjects(stageDataRef.current.Stage);
 
     matterRef.current.registerObject([switchButton, ...stageObject]);
+    matterRef.current.run();
   }
 
   const handleSwitch = () => {
