@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import MatterEngine from "../lib/MatterEngine";
 import CollisionEvents from "../lib/CollisionEvents";
 import { useNavigate } from "react-router-dom";
-import { Body, Constraint, Events } from "matter-js";
+import { Body, Composite, Constraint, Events } from "matter-js";
 import { Rectangle } from "../lib/objects/Rectangle";
 import { Circle } from "../lib/objects/Circle";
 import { createObject, createObjects } from "../lib/objects/CreataObjects";
@@ -54,9 +54,8 @@ function Sample3() {
           });
 
           // スポーンボールの生成
-          const ball = new Circle(0, 0, "default", 20, {}, true);
-          spawnBallRef.current = ball;
-          matterRef.current.registerObject(ball);
+          spawnBallRef.current = Composite.create();
+          matterRef.current.registerObject(spawnBallRef.current);
           setLoading(false);
         })
         .catch((err) => {
@@ -112,7 +111,7 @@ function Sample3() {
         fillStyle: "cyan"
       }
     }
-    spawnBallRef.current.objectSpawn(x, y, radius, option);
+    Composite.add(spawnBallRef.current, new Circle(x, y, "default", radius, option).getObject());
   };
 
   const handleReset = () => {

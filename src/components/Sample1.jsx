@@ -4,9 +4,11 @@ import CollisionEvents from "../lib/CollisionEvents";
 import { useNavigate } from "react-router-dom";
 import { Circle } from "../lib/objects/Circle";
 import { createObject, createObjects } from "../lib/objects/CreataObjects";
+import { Composite } from "matter-js";
 
 function Sample1() {
   // useStateは非同期で値を返すため、useRefを使って参照を保持する
+  // TODO : useStateを使うとしたらゲーム開始時までに色々取得している必要がある
   const matterRef = useRef(null);
   const spawnBallRef = useRef(null);
   const switchObjRef = useRef(null);
@@ -35,15 +37,10 @@ function Sample1() {
         .then((data) => {
           stageDataRef.current = data;
           matterInitialize();
-          /* スポーンボールの登録
-           NOTE : ここで生成するのは「ボールを格納するコンポジット」であってボール本体ではない
-                  なので、ボール本体は別途生成する必要がある
-           NOTE : コンポジット（Composite）はデザインパターンの１つでもある。
-                  matter.jsのCompositeもそれを採用していると思われる。
-          */
-          const ball = new Circle(0, 0, "default", 20, {}, true);
-          spawnBallRef.current = ball;
-          matterRef.current.registerObject(ball);
+
+          /* スポーン用オブジェクトのコンポジットを作成 */
+          spawnBallRef.current = Composite.create();
+          matterRef.current.registerObject(spawnBallRef.current);
           setLoading(false);
         })
         .catch((err) => {
@@ -119,7 +116,7 @@ function Sample1() {
       }
     }
     // 初期化時に用意したボールのコンポジットに登録し、ボールを生成
-    spawnBallRef.current.objectSpawn(x, y, radius, option);
+    Composite.add(spawnBallRef.current, new Circle(x, y, "ball", radius, option).getObject());
   };
 
   // リセットボタン

@@ -3,7 +3,6 @@ import { Bodies, Body, Composite } from "matter-js";
 
 class MatetrObject {
   composite = null;
-  compositeCreate = null;
   bodies = null;
   object = null;
   posX = 0;
@@ -19,7 +18,6 @@ class MatetrObject {
    */
   constructor(x, y, type) {
     this.bodies = Bodies;
-    this.compositeCreate = Composite.create();
     this.posX = x;
     this.posY = y;
     this.type = type;
@@ -78,22 +76,11 @@ class MatetrObject {
   }
 
   /**
-   * @method オブジェクトをスポーン
-   * @param {number} x X座標
-   * @param {number} y Y座標
-   * @param {object} option オプション
-   * @description オブジェクトを指定位置にスポーン
-   */
-  objectSpawn(x, y, option) { }
-
-  /**
    * @method オブジェクトクリア
-   * @description 生成したオブジェクトを全削除
-   *              同じコンポジット内のオブジェクトが全て削除される
-   *              コンポジット自体は削除されない
+   * @description 生成したオブジェクトを削除
    */
-  objectClear() {
-    Composite.clear(this.compositeCreate, false);
+  objectClear(composite) {
+    Composite.remove(composite, this.object);
   }
 
   /**
@@ -101,7 +88,7 @@ class MatetrObject {
    * @description 生成したオブジェクトを取得
    */
   getObject() {
-    return this.object || this.compositeCreate;
+    return this.object;
   }
 
   /**

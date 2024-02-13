@@ -63,6 +63,10 @@ class MatterEngine {
     Composite.add(this.engine.world, object);
   }
 
+  registerComposite(composite) {
+    Composite.add(this.engine.world, composite);
+  }
+
   /* ゲッター */
   getEngine() {
     return this.engine;

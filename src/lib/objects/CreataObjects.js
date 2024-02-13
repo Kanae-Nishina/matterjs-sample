@@ -6,19 +6,19 @@ import { Polygon } from "./Polygon";
 // 引数作成のマッパー
 const mapper = {
   Rectangle: (stage, type) => {
-    return [stage.x, stage.y, type, stage.width, stage.height, stage.option, false];
+    return [stage.x, stage.y, type, stage.width, stage.height, stage.option];
   },
 
   Circle: (stage, type) => {
-    return [stage.x, stage.y, type, stage.radius, stage.option, false];
+    return [stage.x, stage.y, type, stage.radius, stage.option];
   },
 
   Triangle: (stage, type) => {
-    return [stage.x, stage.y, type, stage.height, stage.option, false];
+    return [stage.x, stage.y, type, stage.height, stage.option];
   },
 
   Polygon: (stage, type) => {
-    return [stage.x, stage.y, type, stage.sides, stage.radius, stage.option, false];
+    return [stage.x, stage.y, type, stage.sides, stage.radius, stage.option];
   },
 };
 

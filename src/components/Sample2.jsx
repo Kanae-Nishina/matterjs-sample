@@ -134,7 +134,7 @@ function Sample2() {
   };
 
   // TODO : 回転をステージ作成のみなのか配置も回転できるようにするのかの確認
-  // 使う機会が多いようであれば、Mouse.jsに移動でも良いかも
+  // 使う機会が多いようであれば、Mouse.jsにwheel用のイベント追加
   const handleWheel = (e) => {
     // 選択中のオブジェクトがあるなら選択オブジェクトを回転
     if (selectObjRef.current && selectObjRef.current.label === "userStatic") {
