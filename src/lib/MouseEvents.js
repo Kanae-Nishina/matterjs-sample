@@ -16,6 +16,10 @@ class MouseEvents {
         },
       },
     });
+
+    this.clickEvents = [];
+    this.dragEvents = [];
+    this.clickUpEvents = [];
   }
 
   getMouse() {

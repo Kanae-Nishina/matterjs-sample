@@ -1,14 +1,17 @@
 import { Events } from "matter-js";
 
 export class MatterEvents {
-  constructor() {
+  constructor(engine) {
+    this.engine = engine;
     this.afterUpdateEvents = [];
     this.beforeUpdateEvents = [];
     this.afterRenderEvents = [];
     this.beforeRenderEvents = [];
-    this.collisionActiveEvents = [];
-    this.collisionEndEvents = [];
-    this.collisionStartEvents = [];
+    // イベントが残っていては困るので全削除
+    this.allOffAfterRenderEvent();
+    this.allOffAfterUpdateEvent();
+    this.allOffBeforeRenderEvent();
+    this.allOffBeforeUpdateEvent();
   }
 
   /**
@@ -27,7 +30,9 @@ export class MatterEvents {
    */
   onAfterUpdateEvent() {
     this.afterUpdateEvents.forEach((event) => {
-      Events.on(this.engine, "afterUpdate", event);
+      Events.on(this.engine, "afterUpdate", (e) => {
+        event(e);
+      });
     });
   }
 
@@ -37,7 +42,9 @@ export class MatterEvents {
    * @description 登録した更新後イベントを解除する
    */
   offAfterUpdateEvent(event) {
-    Events.off(this.engine, "afterUpdate", event);
+    Events.off(this.engine, "afterUpdate", (e) => {
+      event(e);
+    });
   }
 
   /**
@@ -64,7 +71,9 @@ export class MatterEvents {
    */
   onBeforeUpdateEvent() {
     this.beforeUpdateEvents.forEach((event) => {
-      Events.on(this.engine, "beforeUpdate", event);
+      Events.on(this.engine, "beforeUpdate", (e) => {
+        event(e);
+      });
     });
   }
 
@@ -74,7 +83,9 @@ export class MatterEvents {
    * @description 登録した更新前イベントを解除する
    */
   offBeforeUpdateEvent(event) {
-    Events.off(this.engine, "beforeUpdate", event);
+    Events.off(this.engine, "beforeUpdate", (e) => {
+      event(e);
+    });
   }
 
   /**
@@ -101,7 +112,9 @@ export class MatterEvents {
    */
   onAfterRenderEvent() {
     this.afterRenderEvents.forEach((event) => {
-      Events.on(this.engine, "afterRender", event);
+      Events.on(this.engine, "afterRender", (e) => {
+        event(e);
+      });
     });
   }
 
@@ -111,7 +124,9 @@ export class MatterEvents {
    * @description 登録した描画後イベントを解除する
    */
   offAfterRenderEvent(event) {
-    Events.off(this.engine, "afterRender", event);
+    Events.off(this.engine, "afterRender", (e) => {
+      event(e);
+    });
   }
 
   /**
@@ -138,7 +153,9 @@ export class MatterEvents {
    */
   onBeforeRenderEvent() {
     this.beforeRenderEvents.forEach((event) => {
-      Events.on(this.engine, "beforeRender", event);
+      Events.on(this.engine, "beforeRender", (e) => {
+        event(e);
+      });
     });
   }
 
@@ -148,7 +165,9 @@ export class MatterEvents {
    * @description 登録した描画前イベントを解除する
    */
   offBeforeRenderEvent(event) {
-    Events.off(this.engine, "beforeRender", event);
+    Events.off(this.engine, "beforeRender", (e) => {
+      event(e);
+    });
   }
 
   /**
@@ -157,105 +176,5 @@ export class MatterEvents {
    */
   allOffBeforeRenderEvent() {
     Events.off(this.engine, "beforeRender");
-  }
-
-  /**
-   * @method 衝突中イベント登録
-   * @param {function} event 登録したいイベント
-   * @description 衝突中イベントを登録する
-   */
-  registerCollisionActiveEvent(event) {
-    this.collisionActiveEvents.push(event);
-  }
-
-  /**
-   * @method 衝突中イベント発火
-   * @description 登録した衝突中イベントを発火する
-   * NOTE : 厳密には発火するのは衝突中です。
-   */
-  offCollisionActiveEvent(event) {
-    Events.off(this.engine, "collisionActive", event);
-  }
-
-  /**
-   * @method 衝突中イベント全解除
-   * @description 登録した衝突中イベントを全て解除する
-   */
-  allOffCollisionActiveEvent() {
-    Events.off(this.engine, "collisionActive");
-  }
-
-  /**
-   * @method 衝突終了イベント登録
-   * @param {function} event 登録したいイベント
-   * @description 衝突終了イベントを登録する
-   */
-  registerCollisionEndEvent(event) {
-    this.collisionEndEvents.push(event);
-  }
-
-  /**
-   * @method 衝突終了イベント発火
-   * @description 登録した衝突終了イベントを発火する
-   * NOTE : 厳密には発火するのは衝突終了です。
-   */
-  onCollisionEndEvent() {
-    this.collisionEndEvents.forEach((event) => {
-      Events.on(this.engine, "collisionEnd", event);
-    });
-  }
-
-  /**
-   * @method 衝突終了イベント解除
-   * @param {function} event 解除したいイベント
-   * @description 登録した衝突終了イベントを解除する
-   */
-  offCollisionEndEvent(event) {
-    Events.off(this.engine, "collisionEnd", event);
-  }
-
-  /**
-   * @method 衝突終了イベント全解除
-   * @description 登録した衝突終了イベントを全て解除する
-   */
-  allOffCollisionEndEvent() {
-    Events.off(this.engine, "collisionEnd");
-  }
-
-  /**
-   * @method 衝突開始イベント登録
-   * @param {function} event 登録したいイベント
-   * @description 衝突開始イベントを登録する
-   */
-  registerCollisionStartEvent(event) {
-    this.collisionStartEvents.push(event);
-  }
-
-  /**
-   * @method 衝突開始イベント発火
-   * @description 登録した衝突開始イベントを発火する
-   * NOTE : 厳密には発火するのは衝突開始です。
-   */
-  onCollisionStartEvent() {
-    this.collisionStartEvents.forEach((event) => {
-      Events.on(this.engine, "collisionStart", event);
-    });
-  }
-
-  /**
-   * @method 衝突開始イベント解除
-   * @param {function} event 解除したいイベント
-   * @description 登録した衝突開始イベントを解除する
-   */
-  offCollisionStartEvent(event) {
-    Events.off(this.engine, "collisionStart", event);
-  }
-
-  /**
-   * @method 衝突開始イベント全解除
-   * @description 登録した衝突開始イベントを全て解除する
-   */
-  allOffCollisionStartEvent() {
-    Events.off(this.engine, "collisionStart");
   }
 }

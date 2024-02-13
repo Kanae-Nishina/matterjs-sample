@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import MatterEngine from "../lib/MatterEngine";
 import CollisionEvents from "../lib/CollisionEvents";
 import { useNavigate } from "react-router-dom";
-import { Body, Composite, Constraint, Events } from "matter-js";
+import { Body, Composite, Constraint } from "matter-js";
 import { Rectangle } from "../lib/objects/Rectangle";
 import { Circle } from "../lib/objects/Circle";
 import { createObject, createObjects } from "../lib/objects/CreateObjects";
+import { MatterEvents } from "../lib/MatterEvents";
 
 function Sample3() {
   const matterRef = useRef(null);
@@ -47,11 +48,12 @@ function Sample3() {
 
           matterRef.current.registerObject([rotateObj, constraint]);
 
-          // TODO : 更新前処理の登録
-          // 更新周りのイベントクラスをつくる
-          Events.on(matterRef.current.getEngine(), "beforeUpdate", function (event) {
+          // 更新前処理の登録
+          const updateEvents = new MatterEvents(matterRef.current.getEngine());
+          updateEvents.registerBeforeUpdateEvent(() => {
             Body.setAngularVelocity(rotateObj.getObject(), 0.05);
           });
+          updateEvents.onBeforeUpdateEvent();
 
           // スポーンボールの生成
           spawnBallRef.current = Composite.create();
@@ -90,6 +92,7 @@ function Sample3() {
   }
 
   const handleSwitch = () => {
+    console.log("switch");
     const intervalId = setInterval(() => {
       const results = switchObjRef.current.setPositionAnimate(400, 580);
       setGameClear(results);
@@ -111,7 +114,7 @@ function Sample3() {
         fillStyle: "cyan"
       }
     }
-    Composite.add(spawnBallRef.current, new Circle(x, y, "default", radius, option).getObject());
+    Composite.add(spawnBallRef.current, new Circle(x, y, "ball", radius, option).getObject());
   };
 
   const handleReset = () => {

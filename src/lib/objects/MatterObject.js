@@ -10,7 +10,6 @@ class MatterObject {
    * @description 初期化
    */
   constructor(x, y, type) {
-    this.bodies = Bodies;
     this.posX = x;
     this.posY = y;
     this.type = type;
@@ -64,7 +63,7 @@ class MatterObject {
     if (Math.abs(distanceX) < 1 && Math.abs(distanceY) < 1) {
       return true;
     }
-    this.setPosition(targetPosition);
+    Body.setPosition(this.object, targetPosition);
     return false;
   }
 

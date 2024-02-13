@@ -1,3 +1,4 @@
+import { Bodies } from "matter-js";
 import { MatterObject } from "./MatterObject";
 
 class Circle extends MatterObject {
@@ -18,7 +19,7 @@ class Circle extends MatterObject {
     option = {}
   ) {
     super(x, y, type);
-    this.object = this.bodies.circle(x, y, radius, this.getOptionAddColor(option));
+    this.object = Bodies.circle(x, y, radius, this.getOptionAddColor(option));
   }
 }
 

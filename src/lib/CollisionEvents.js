@@ -1,17 +1,10 @@
-import Matter from "matter-js";
+import Matter, { Events } from "matter-js";
 
 class CollisionEvents {
-  /*
-    TODO : 現在１つしか登録できないので、複数登録できるようにする
-   */
-  collisionStartCallback = null;
-  /*
-    TODO : ゴールスイッチの押下イベントは1つでいいが、ギミックスイッチの場合は複数登録できたほうがよさげ
-   */
-  switchCallback = null;
   constructor(engine) {
-    this.events = Matter.Events;
     this.engine = engine;
+    this.switchCallback = null;
+    this.collisionStartCallback = null;
   }
 
   /**
@@ -26,7 +19,7 @@ class CollisionEvents {
         callback(pairs[i].bodyA, pairs[i].bodyB);
       }
     };
-    this.events.on(this.engine, 'collisionStart', this.collisionStartCallback);
+    Events.on(this.engine, 'collisionStart', this.collisionStartCallback);
   }
 
   /**

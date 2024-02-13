@@ -11,7 +11,7 @@
       "height": 30,
       "option": {
         "isStatic": true,
-        "sollisionFilter": {
+        "collisionFilter": {
           "group": -1
         },
         "label": "stage"
@@ -26,7 +26,7 @@
     "height": 50,
     "option": {
       "isStatic": true,
-      "sollisionFilter": {
+      "collisionFilter": {
         "group": -1
       },
       "label": "switch"

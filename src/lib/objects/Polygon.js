@@ -1,3 +1,4 @@
+import { Bodies } from "matter-js";
 import { MatterObject } from "./MatterObject";
 
 class Polygon extends MatterObject {
@@ -12,7 +13,7 @@ class Polygon extends MatterObject {
     option = {},
   ) {
     super(x, y, type);
-    this.object = this.bodies.polygon(x, y, sides, radius, this.getOptionAddColor(option, type));
+    this.object = Bodies.polygon(x, y, sides, radius, this.getOptionAddColor(option, type));
   }
 }
 

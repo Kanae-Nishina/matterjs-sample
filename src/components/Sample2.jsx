@@ -97,7 +97,7 @@ function Sample2() {
       selectObjRef.current = null;
       return;
     }
-    // 選択されているオブジェクトがクリックされたオブジェクトと違うなら選択を解除して新しく選択
+
     selectObjRef.current = object;
     const diff_x = e.mouse.position.x - selectObjRef.current.position.x;
     const diff_y = e.mouse.position.y - selectObjRef.current.position.y;
