@@ -1,8 +1,6 @@
 import Matter from "matter-js";
 
 class CollisionEvents {
-  events = Matter.Events;
-  engine = null;
   /*
     TODO : 現在１つしか登録できないので、複数登録できるようにする
    */
@@ -12,6 +10,7 @@ class CollisionEvents {
    */
   switchCallback = null;
   constructor(engine) {
+    this.events = Matter.Events;
     this.engine = engine;
   }
 

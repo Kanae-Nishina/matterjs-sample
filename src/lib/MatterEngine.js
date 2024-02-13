@@ -7,8 +7,6 @@ class MatterEngine {
    */
   DisplayWidth = 800;
   DisplayHeight = 600;
-  engine = null;
-  render = null;
   constructor() {
     this.engine = Engine.create();
   }
@@ -76,7 +74,7 @@ class MatterEngine {
     return this.render;
   }
 
-  setRendereMouse(mouse) {
+  setRenderMouse(mouse) {
     this.render.mouse = mouse;
   }
 }

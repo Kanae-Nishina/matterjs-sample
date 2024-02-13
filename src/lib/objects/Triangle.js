@@ -1,7 +1,6 @@
-import { Composite } from "matter-js";
-import { MatetrObject } from "./MatterObject";
+import { MatterObject } from "./MatterObject";
 
-class Triangle extends MatetrObject {
+class Triangle extends MatterObject {
   DefaultHeight = 100;
   /**
    * @method 三角形生成

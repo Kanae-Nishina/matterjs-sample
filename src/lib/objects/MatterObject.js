@@ -1,14 +1,7 @@
 import getColor from "../../common/ColorSetting";
 import { Bodies, Body, Composite } from "matter-js";
 
-class MatetrObject {
-  composite = null;
-  bodies = null;
-  object = null;
-  posX = 0;
-  posY = 0;
-  type = "default";
-
+class MatterObject {
   /**
    * @method コンストラクタ
    * @param {Matter} Matter
@@ -64,7 +57,7 @@ class MatetrObject {
     const targetPosition = { x: currentPosition.x + speedX, y: currentPosition.y + speedY };
 
     /*
-     NOTE: 距離が一定以下なら終了とみなす処理
+      NOTE: 距離が一定以下なら終了とみなす処理
       ルート計算は重いので、X座標とY座標の差分が絶対値の1以下なら終了とみなす
       Math.absは絶対値を返却する関数
     */
@@ -119,4 +112,4 @@ class MatetrObject {
   }
 }
 
-export { MatetrObject };
+export { MatterObject };

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Body, Composite, Constraint, Events } from "matter-js";
 import { Rectangle } from "../lib/objects/Rectangle";
 import { Circle } from "../lib/objects/Circle";
-import { createObject, createObjects } from "../lib/objects/CreataObjects";
+import { createObject, createObjects } from "../lib/objects/CreateObjects";
 
 function Sample3() {
   const matterRef = useRef(null);

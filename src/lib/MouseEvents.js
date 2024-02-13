@@ -1,12 +1,6 @@
 import { Engine, Events, Mouse, MouseConstraint, Render } from "matter-js";
 
 class MouseEvents {
-  mouseConstraint = null;
-  clickEvents = [];
-  dragEvents = [];
-  clickUpEvents = [];
-  mouse = null;
-
   /**
    * @method コンストラクタ
    * @description 初期化

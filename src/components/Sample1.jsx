@@ -3,7 +3,7 @@ import MatterEngine from "../lib/MatterEngine";
 import CollisionEvents from "../lib/CollisionEvents";
 import { useNavigate } from "react-router-dom";
 import { Circle } from "../lib/objects/Circle";
-import { createObject, createObjects } from "../lib/objects/CreataObjects";
+import { createObject, createObjects } from "../lib/objects/CreateObjects";
 import { Composite } from "matter-js";
 
 function Sample1() {

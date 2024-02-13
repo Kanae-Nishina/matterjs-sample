@@ -1,7 +1,6 @@
-import { Composite } from "matter-js";
-import { MatetrObject } from "./MatterObject";
+import { MatterObject } from "./MatterObject";
 
-class Circle extends MatetrObject {
+class Circle extends MatterObject {
   DefaultRadius = 25;
   /**
    * @method 円生成

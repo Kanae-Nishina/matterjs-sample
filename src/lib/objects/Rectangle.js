@@ -1,7 +1,6 @@
-import { Composite } from "matter-js";
-import { MatetrObject } from "./MatterObject";
+import { MatterObject } from "./MatterObject";
 
-class Rectangle extends MatetrObject {
+class Rectangle extends MatterObject {
   DefaultWidth = 100;
   DefaultHeight = 100;
 

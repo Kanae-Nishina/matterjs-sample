@@ -1,7 +1,6 @@
-import { Composite } from "matter-js";
-import { MatetrObject } from "./MatterObject";
+import { MatterObject } from "./MatterObject";
 
-class Polygon extends MatetrObject {
+class Polygon extends MatterObject {
   DefaultSides = 5;
   DefaultRadius = 50;
   constructor(

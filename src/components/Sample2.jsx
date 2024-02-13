@@ -4,7 +4,7 @@ import CollisionEvents from "../lib/CollisionEvents";
 import { useNavigate } from "react-router-dom";
 import MouseEvents from "../lib/MouseEvents";
 import { Body } from "matter-js";
-import { createObject, createObjects } from "../lib/objects/CreataObjects";
+import { createObject, createObjects } from "../lib/objects/CreateObjects";
 
 function Sample2() {
   const matterRef = useRef(null);
@@ -78,7 +78,7 @@ function Sample2() {
 
     // マウスイベント作成
     const mouseEvent = new MouseEvents(matterRef.current.getRender(), matterRef.current.getEngine());
-    matterRef.current.setRendereMouse(mouseEvent.getMouse());
+    matterRef.current.setRenderMouse(mouseEvent.getMouse());
     matterRef.current.registerObject(mouseEvent.getMouseConstraint());
     // クリックイベント
     mouseEvent.registerClickEvent(clickEvent);
